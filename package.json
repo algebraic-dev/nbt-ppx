@@ -5,33 +5,34 @@
   "license": "MIT",
   "esy": {
     "build": "dune build -p #{self.name}",
-    "buildDev": "refmterr dune build --promote-install-files --root . --only-package #{self.name}",
-    "release": {
-      "rewritePrefix": true,
-      "bin": [
-        "Nbt"
-      ]
-    },
-    "buildEnv": {
-      "ODOC_SYNTAX": "re"
-    }
+    "buildDev":
+      "refmterr dune build --promote-install-files --root . --only-package #{self.name}",
+    "release": { "rewritePrefix": true, "bin": [ "Nbt" ] },
+    "buildEnv": { "ODOC_SYNTAX": "re" }
   },
   "scripts": {
-    "test": "esy x Nbt",
+    "tests": "esy dune runtest",
+    "promote": "esy dune runtest --auto-promote",
     "format": "esy dune build @fmt --auto-promote",
     "doc": "esy dune build @doc"
   },
   "dependencies": {
+    "@esy-ocaml/reason": ">= 3.6.0 < 4.0.0",
+    "@opam/bitstring": "4.1.0",
+    "@opam/camlzip": "1.10",
     "@opam/dune": ">=2.6",
+    "@opam/ounit2": "2.2.4",
+    "@opam/ppx_bitstring": "4.1.0",
+    "@opam/ppx_expect": "v0.14.1",
     "@reason-native/console": "*",
     "@reason-native/pastel": "*",
-    "@esy-ocaml/reason": ">= 3.6.0 < 4.0.0",
     "ocaml": "~4.10.0"
   },
   "devDependencies": {
-    "@opam/merlin": "*",
+    "@opam/merlin": "3.5.0",
+    "@opam/ocaml-lsp-server": "1.4.1",
+    "@opam/odoc": "*",
     "@reason-native/rely": "*",
-    "refmterr": "*",
-    "@opam/odoc": "*"
+    "refmterr": "*"
   }
 }
