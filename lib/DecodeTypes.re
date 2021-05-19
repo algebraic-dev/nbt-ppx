@@ -78,12 +78,12 @@ let rec decode_list =
 
 and decode_compound = bits => {
   let rec loop = payload => {
-    switch (decode_payload(payload)) {
-    | Ok(({value: TNothing, _}, bits')) => Ok(([], bits'))
-    | Ok(({tag, value}, bits')) =>
+    let* ({tag, value}, bits') = decode_payload(payload);
+    switch (value) {
+    | TNothing => Ok(([], bits'))
+    | _ =>
       let* (tail, bits') = loop(bits');
       Ok(([{tag, value}, ...tail], bits'));
-    | Error(err) => Error(err)
     };
   };
   let* (list, payload) = loop(bits);
