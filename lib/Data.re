@@ -1,9 +1,3 @@
-type i8;
-type i16;
-type i32;
-type i64;
-type double;
-
 [@deriving show({with_path: false})]
 type tag = {
   tag: string,
@@ -22,5 +16,5 @@ and nbt =
   | TString(string)
   | TList(list(nbt))
   | TCompound(list(tag))
-  | TIntArray(list(int))
-  | TLongArray(list(int));
+  | TIntArray(list(int32))
+  | TLongArray(list(int64));
