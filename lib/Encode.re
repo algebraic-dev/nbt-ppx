@@ -34,15 +34,37 @@ and encode_tree = buffer =>
   | TLong(qword) => add_int64_be(buffer, qword)
   | TFloat(float) => add_int32_be(buffer, Int32.bits_of_float(float))
   | TDouble(float) => add_int64_be(buffer, Int64.bits_of_float(float))
-  | TByteArray(string) => add_string(buffer, string)
-  | TString(string) => add_string(buffer, string)
-  | TList(ls) => List.iter(encode_tree(buffer), ls)
-  | TCompound(ls) => List.iter(encode_tag(buffer), ls)
-  | TIntArray(ls) => List.iter(n => Buffer.add_int32_be(buffer, n), ls)
-  | TLongArray(ls) => List.iter(n => Buffer.add_int64_be(buffer, n), ls);
+  | TByteArray(string) => {
+      Buffer.add_int32_be(buffer, String.length(string) |> Int32.of_int);
+      add_string(buffer, string);
+    }
+  | TString(string) => {
+      Buffer.add_uint16_be(buffer, String.length(string));
+      add_string(buffer, string);
+    }
+  | TList(ls) => {
+      switch (ls) {
+      | [hd, ..._] => Buffer.add_uint8(buffer, get_id(hd))
+      | _ => Buffer.add_uint8(buffer, 0)
+      };
+      Buffer.add_int32_be(buffer, List.length(ls) |> Int32.of_int);
+      List.iter(encode_tree(buffer), ls);
+    }
+  | TCompound(ls) => {
+      List.iter(encode_tag(buffer), ls);
+      Buffer.add_int8(buffer, 0);
+    }
+  | TIntArray(ls) => {
+      Buffer.add_int32_be(buffer, List.length(ls) |> Int32.of_int);
+      List.iter(n => Buffer.add_int32_be(buffer, n), ls);
+    }
+  | TLongArray(ls) => {
+      Buffer.add_int32_be(buffer, List.length(ls) |> Int32.of_int);
+      List.iter(n => Buffer.add_int64_be(buffer, n), ls);
+    };
 
 let encode = tree => {
   let buffer = create(100);
-  encode_tree(buffer, tree);
+  encode_tag(buffer, tree);
   Ok(contents(buffer));
 };
