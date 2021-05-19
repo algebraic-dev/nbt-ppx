@@ -1,4 +1,0 @@
-(executable
- (name Nbt)
- (public_name Nbt)
- (libraries lib))
